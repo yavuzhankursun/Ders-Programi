@@ -1,0 +1,50 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{% trans 'Dersleri İçe Aktar' %}</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="module aligned">
+            <div class="form-row field-bolum">
+                <div>
+                    <label class="required" for="id_bolum">{% trans 'Bölüm' %}:</label>
+                    <select name="bolum" required id="id_bolum">
+                        <option value="" selected>---------</option>
+                        {% for bolum in bolumler %}
+                            <option value="{{ bolum.id }}">{{ bolum }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="help">{% trans 'Derslerin hangi bölüme ait olacağını seçin.' %}</p>
+                </div>
+            </div>
+            <div class="form-row field-file">
+                <div>
+                    <label class="required" for="id_file">{% trans 'Dosya' %}:</label>
+                    <input type="file" name="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required id="id_file">
+                    <p class="help">{% trans 'CSV veya XLSX formatında ders listesini içeren dosyayı seçin. Beklenen sütunlar: Dönem, Ders Kodu, Ders Adi, Teorik, Uygulama, Laboratuar' %}</p>
+                 </div>
+            </div>
+            <div class="form-row field-default_kontenjan">
+                 <div>
+                    <label for="id_default_kontenjan">{% trans 'Varsayılan Kontenjan' %}:</label>
+                    <input type="number" name="default_kontenjan" value="50" id="id_default_kontenjan">
+                     <p class="help">{% trans 'Dosyada kontenjan belirtilmemişse kullanılacak değer.' %}</p>
+                </div>
+            </div>
+        </fieldset>
+        <div class="submit-row">
+            <input type="submit" value="{% trans 'İçe Aktar' %}" class="default">
+        </div>
+    </form>
+</div>
+{% endblock %} 

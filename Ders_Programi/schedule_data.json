@@ -1,0 +1,325 @@
+[
+{
+  "model": "schedule.bolum",
+  "pk": 1,
+  "fields": {
+    "bolum_kodu": "BLM",
+    "bolum_adi": "Bilgisayar Mühendisliði"
+  }
+},
+{
+  "model": "schedule.bolum",
+  "pk": 2,
+  "fields": {
+    "bolum_kodu": "YZM",
+    "bolum_adi": "Yazýlým Mühendisliði"
+  }
+},
+{
+  "model": "schedule.ogretimuyesi",
+  "pk": 4,
+  "fields": {
+    "user": 5,
+    "ad_soyad": "Prof. Dr. Nevcihan DURU"
+  }
+},
+{
+  "model": "schedule.ogretimuyesi",
+  "pk": 5,
+  "fields": {
+    "user": 7,
+    "ad_soyad": "Dr. Öðr. Üyesi Vildan YAZICI"
+  }
+},
+{
+  "model": "schedule.ogretimuyesi",
+  "pk": 6,
+  "fields": {
+    "user": 8,
+    "ad_soyad": "Prof. Dr. Hüseyin Tarýk DURU"
+  }
+},
+{
+  "model": "schedule.ogretimuyesi",
+  "pk": 7,
+  "fields": {
+    "user": 9,
+    "ad_soyad": "Dr. Öðr. Üyesi Mehmet KARA"
+  }
+},
+{
+  "model": "schedule.ogretimuyesi",
+  "pk": 8,
+  "fields": {
+    "user": 10,
+    "ad_soyad": "Dr. Öðr. Üyesi Ulaþ VURAL"
+  }
+},
+{
+  "model": "schedule.ogretimuyesi",
+  "pk": 9,
+  "fields": {
+    "user": 11,
+    "ad_soyad": "Dr. Öðr. Üyesi Ýsmet KARADUMAN"
+  }
+},
+{
+  "model": "schedule.ogretimuyesi",
+  "pk": 10,
+  "fields": {
+    "user": 12,
+    "ad_soyad": "Dr. Öðr. Üyesi Ercan ÖLÇER"
+  }
+},
+{
+  "model": "schedule.ogretimuyesi",
+  "pk": 11,
+  "fields": {
+    "user": 13,
+    "ad_soyad": "Dr. Öðr. Üyesi Elif Pýnar HACIBEYOÐLU"
+  }
+},
+{
+  "model": "schedule.ogretimuyesi",
+  "pk": 12,
+  "fields": {
+    "user": 14,
+    "ad_soyad": "Dr. Öðr. Üyesi Fulya AKDENÝZ"
+  }
+},
+{
+  "model": "schedule.ogretimuyesi",
+  "pk": 13,
+  "fields": {
+    "user": 15,
+    "ad_soyad": "Arþ. Gör. Eray DURSUN"
+  }
+},
+{
+  "model": "schedule.ogretimuyesi",
+  "pk": 14,
+  "fields": {
+    "user": 16,
+    "ad_soyad": "Arþ. Gör. Candide ÖZTÜRK"
+  }
+},
+{
+  "model": "schedule.ogrenci",
+  "pk": 1,
+  "fields": {
+    "user": null,
+    "ogrenci_no": "230502047",
+    "ad_soyad": "Yavuzhan Kurþun",
+    "bolum": 2,
+    "sinif": 3
+  }
+},
+{
+  "model": "schedule.ogrenci",
+  "pk": 2,
+  "fields": {
+    "user": null,
+    "ogrenci_no": "220502007",
+    "ad_soyad": "Eren Yalaz",
+    "bolum": 2,
+    "sinif": 3
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 1,
+  "fields": {
+    "derslik_adi": "M101",
+    "kapasite": 66,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 2,
+  "fields": {
+    "derslik_adi": "M201",
+    "kapasite": 141,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 3,
+  "fields": {
+    "derslik_adi": "M301",
+    "kapasite": 141,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 4,
+  "fields": {
+    "derslik_adi": "S101",
+    "kapasite": 138,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 5,
+  "fields": {
+    "derslik_adi": "S201",
+    "kapasite": 60,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 6,
+  "fields": {
+    "derslik_adi": "S202",
+    "kapasite": 60,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 7,
+  "fields": {
+    "derslik_adi": "D101",
+    "kapasite": 87,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 8,
+  "fields": {
+    "derslik_adi": "D102",
+    "kapasite": 87,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 9,
+  "fields": {
+    "derslik_adi": "D103",
+    "kapasite": 88,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 10,
+  "fields": {
+    "derslik_adi": "D104",
+    "kapasite": 56,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 11,
+  "fields": {
+    "derslik_adi": "D201",
+    "kapasite": 87,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 12,
+  "fields": {
+    "derslik_adi": "D202",
+    "kapasite": 56,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 13,
+  "fields": {
+    "derslik_adi": "D301",
+    "kapasite": 88,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 14,
+  "fields": {
+    "derslik_adi": "D302",
+    "kapasite": 56,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 15,
+  "fields": {
+    "derslik_adi": "D401",
+    "kapasite": 88,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 16,
+  "fields": {
+    "derslik_adi": "D402",
+    "kapasite": 56,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 17,
+  "fields": {
+    "derslik_adi": "D403",
+    "kapasite": 56,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 18,
+  "fields": {
+    "derslik_adi": "AMFÝ A",
+    "kapasite": 143,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 19,
+  "fields": {
+    "derslik_adi": "AMFÝ B",
+    "kapasite": 143,
+    "statu": "NORMAL"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 20,
+  "fields": {
+    "derslik_adi": "BÝL.LAB 1",
+    "kapasite": 40,
+    "statu": "LAB"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 21,
+  "fields": {
+    "derslik_adi": "BÝL.LAB.2",
+    "kapasite": 30,
+    "statu": "LAB"
+  }
+},
+{
+  "model": "schedule.derslik",
+  "pk": 22,
+  "fields": {
+    "derslik_adi": "KÜÇÜK LAB",
+    "kapasite": 20,
+    "statu": "LAB"
+  }
+}

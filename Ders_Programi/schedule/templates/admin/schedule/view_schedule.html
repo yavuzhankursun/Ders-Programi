@@ -1,0 +1,287 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+{% load template_filters %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.8em; /* Yazı boyutunu küçülttük */
+        }
+        .schedule-table th, .schedule-table td {
+            border: 1px solid #ccc;
+            padding: 4px; /* Dolguyu azalttık */
+            text-align: center;
+            vertical-align: middle;
+            height: 50px; /* Hücre yüksekliği */
+        }
+        .schedule-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .day-header {
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);
+            font-weight: bold;
+            background-color: #e0e0e0;
+            width: 20px; /* Genişliği daralttık */
+        }
+        .time-header {
+             width: 80px; /* Saat sütunu genişliği */
+        }
+        /* Örnek sınıf renkleri (Excel exporttaki gibi) */
+        .sinif-1 { background-color: #FFE0B2; } /* Açık Turuncu */
+        .sinif-2 { background-color: #BBDEFB; } /* Açık Mavi */
+        .sinif-3 { background-color: #FFF9C4; } /* Açık Sarı */
+        .sinif-4 { background-color: #C8E6C9; } /* Açık Yeşil */
+
+        /* Butonları yan yana getirmek için */
+        .action-buttons form, .action-buttons a {
+             display: inline-block;
+             margin-right: 10px;
+        }
+         .action-buttons .button{
+             margin-top: 0; /* Butonun üstündeki boşluğu kaldır */
+         }
+          .action-buttons p {
+              display: inline-block;
+              margin-left: 10px;
+              color: #888;
+              font-size: 0.9em;
+          }
+        .schedule-table td {
+            min-height: 50px; /* Ensures drop zone has height even if empty */
+        }
+        .draggable-item {
+            padding: 5px;
+            margin-bottom: 2px;
+            border: 1px solid #ddd;
+            cursor: move;
+            font-size: 0.9em;
+            line-height: 1.2;
+            display: block; /* Make sure it takes block space */
+            /* Prevent text selection during drag */
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE10+/Edge */
+            user-select: none; /* Standard */
+        }
+        .drop-zone {
+            /* Optional: style the drop zones */
+            background-color: #f9f9f9;
+        }
+        .sortable-ghost {
+            /* Style for the ghost element during drag */
+            opacity: 0.4;
+            background: #c8ebfb;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{{ title }}</h1>
+
+    {# Üst Kısımdaki Butonlar #}
+    <div class="action-buttons module">
+        <form action="{% url 'schedule:generate_schedule' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="button" onclick="return confirm('Ders programı oluşturma işlemi başlatılacak. Bu işlem uzun sürebilir ve mevcut programı silecektir. Emin misiniz?');">
+                {% trans 'Otomatik Ders Programı Oluştur' %}
+            </button>
+             <p>{% trans '(Uyarı: Uzun sürebilir!)' %}</p>
+        </form>
+        {# Excel İndirme Linkini Güncelle - Mevcut Filtreleri Ekle #}
+        <a href="{% url 'schedule:export_excel' %}?{{ request.GET.urlencode }}" class="button">
+            {% trans 'Excel Olarak İndir' %}
+        </a>
+        {# Buraya bölüm seçme filtresi eklenebilir #}
+    </div>
+
+    {# Filtreleme Formu #}
+    <div class="module" id="changelist-filter">
+        <h2>{% trans 'Filtrele' %}</h2>
+        <form method="get" action="">
+            <div style="float: left; margin-right: 20px;">
+                <label for="bolum">{% trans 'Bölüm' %}: </label>
+                <select name="bolum" id="bolum">
+                    <option value="">{% trans 'Tümü' %}</option>
+                    {% for bolum in all_bolumler %}
+                        <option value="{{ bolum.id }}" {% if selected_bolum_id|stringformat:"s" == bolum.id|stringformat:"s" %}selected{% endif %}>{{ bolum.bolum_adi }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="float: left; margin-right: 20px;">
+                 <label for="sinif">{% trans 'Sınıf' %}: </label>
+                 <select name="sinif" id="sinif">
+                    <option value="">{% trans 'Tümü' %}</option>
+                    {% for sinif_option in siniflar %} {# Filtre için hala tüm sınıfları kullan #}
+                        <option value="{{ sinif_option }}" {% if selected_sinif|stringformat:"s" == sinif_option|stringformat:"s" %}selected{% endif %}>{{ sinif_option }}. Sınıf</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="float: left; margin-right: 20px;">
+                 <label for="semester">{% trans 'Dönem' %}: </label>
+                 <select name="semester" id="semester">
+                    <option value="">{% trans 'Tümü' %}</option>
+                    {% for semester_option in all_semesters %}
+                        <option value="{{ semester_option }}" {% if selected_semester == semester_option %}selected{% endif %}>{{ semester_option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+             <button type="submit" class="button">{% trans 'Filtrele' %}</button>
+             <div style="clear: both;"></div>
+        </form>
+    </div>
+
+    {# Yeni Grid Tablo Yapısı #}
+    <div class="results">
+        <table class="schedule-table">
+            <caption>{{ bolum_adi_baslik }}</caption> {# Başlığı tablo başlığı yapalım #}
+            <thead>
+                <tr>
+                    <th>Saatler</th> {# İlk sütun başlığı #}
+                    {% for day in days %}
+                        <th>{{ day }}</th> {# Gün başlıkları #}
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for time_slot in time_slots %}
+                    <tr>
+                        <td class="time-header">{{ time_slot }}</td> {# Satır başlığı: Saat #}
+                        {% for day in days %}
+                            <td class="drop-zone" data-day="{{ day }}" data-time="{{ time_slot }}"> {# *** ADDED: class and data attributes *** #}
+                                {# Bu hücredeki veriyi alalım #}
+                                {% with day_data=schedule_grid|get_item:day %}
+                                    {% with time_slot_data=day_data|get_item:time_slot %}
+                                        {# Gösterilecek sınıflar için döngü #}
+                                        {% for sinif in siniflar_to_display %}
+                                            {% with class_schedule=time_slot_data|get_item:sinif %}
+                                                {% if class_schedule %}
+                                                    {# *** MODIFIED: Added class, data-slot-id, accessing .info *** #}
+                                                    <div class="schedule-entry draggable-item sinif-{{ sinif }}" data-slot-id="{{ class_schedule.id }}">
+                                                        {% if siniflar_to_display|length > 1 %}<strong>{{ sinif }}. Sınıf:</strong><br>{% endif %}
+                                                        {{ class_schedule.info|safe }}
+                                                    </div>
+                                                {% endif %}
+                                            {% endwith %}
+                                        {% endfor %}
+                                    {% endwith %}
+                                {% endwith %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# === Move Scripts Here === #}
+{# Add SortableJS CDN (cdnjs) #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOM fully loaded and parsed (moved script)'); // Log 1
+        const dropZones = document.querySelectorAll('.drop-zone');
+        console.log('Found drop zones (moved script):', dropZones); // Log 2
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]') ? document.querySelector('[name=csrfmiddlewaretoken]').value : '{{ csrf_token }}';
+        if (!csrfToken) {
+            console.error('CSRF Token not found! (moved script)'); // Log 3
+        }
+        if (dropZones.length === 0) {
+             console.warn('No elements with class .drop-zone found! (moved script)'); // Log 4
+             return;
+        }
+        dropZones.forEach((zone, index) => {
+            console.log(`Initializing Sortable on zone ${index + 1} (moved script):`, zone); // Log 5
+            try {
+                new Sortable(zone, {
+                    group: 'schedule',
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    draggable: '.draggable-item',
+                    onStart: function (evt) {
+                         console.log('Drag started (moved script):', evt.item); // Log 6
+                    },
+                    onEnd: function (evt) {
+                        console.log('Drag ended (moved script):', evt.item, 'Dropped in:', evt.to); // Log 7
+                        const item = evt.item;
+                        const toZone = evt.to;
+                        const slotId = item.dataset.slotId;
+                        const newDay = toZone.dataset.day;
+                        const newTime = toZone.dataset.time;
+                        console.log(`Preparing AJAX (moved script): slotId=${slotId}, newDay=${newDay}, newTime=${newTime}`); // Log 8
+                        fetch("{% url 'schedule:update_slot_position' %}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
+                            },
+                            body: JSON.stringify({
+                                slot_id: slotId,
+                                new_day: newDay,
+                                new_time_str: newTime
+                            })
+                        })
+                        .then(response => {
+                             console.log('AJAX response received (moved script):', response.status); // Log 9
+                             if (!response.ok) {
+                                 return response.json().then(errData => {
+                                     throw new Error(errData.error || `HTTP error! status: ${response.status}`);
+                                 }).catch(() => {
+                                     throw new Error(`HTTP error! status: ${response.status}`);
+                                 });
+                             }
+                             return response.json();
+                        })
+                        .then(data => {
+                            console.log('AJAX success data (moved script):', data); // Log 10
+                            if (data.success) {
+                                console.log('Slot updated successfully on backend! (moved script)');
+                            } else {
+                                console.error('Backend error updating slot (moved script):', data.error);
+                                alert('Ders taşınırken bir hata oluştu: ' + data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('AJAX fetch error (moved script):', error); // Log 11
+                            alert('Sunucu ile iletişim kurulamadı veya bir hata oluştu: ' + error.message);
+                        });
+                    }
+                });
+                console.log(`Sortable initialized successfully for zone ${index + 1} (moved script)`); // Log 12
+            } catch (error) {
+                console.error(`Error initializing Sortable for zone ${index + 1} (moved script):`, error); // Log 13
+            }
+        });
+    });
+</script>
+{# === End Moved Scripts === #}
+
+{# Django template filter for accessing dictionary keys with variables #}
+{% comment %}
+Bu filtreyi kullanmak için schedule uygulamanızda şu adımları izleyin:
+1. schedule klasörü içinde `templatetags` adında bir klasör oluşturun.
+2. Bu klasörün içine boş bir `__init__.py` dosyası ekleyin.
+3. Bu klasörün içine `template_filters.py` adında bir dosya oluşturun ve şu içeriği ekleyin:
+   ```python
+   from django import template
+   register = template.Library()
+
+   @register.filter(name='get_item')
+   def get_item(dictionary, key):
+       # Filtreye gelen 'dictionary' gerçekten sözlük benzeri mi diye kontrol et
+       if hasattr(dictionary, 'get'):
+           return dictionary.get(key, '') # Anahtar yoksa veya obje sözlük değilse boş string dön
+       return '' # Eğer obje sözlük değilse doğrudan boş string dön
+   ```
+4. Bu template'in en başına `{% load template_filters %}` satırını eklediğinizden emin olun.
+{% endcomment %}
+{% endblock %}
